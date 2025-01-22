@@ -4,10 +4,17 @@
 //
 //  Created by LOGAN GOUGH on 1/14/25.
 //
+struct Movie: Codable{
+    var Title: String
+    var Year: Int
+    
+}
+
+
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
+class ViewController: UIViewController{
     
     
     
@@ -34,7 +41,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBAction func button(_ sender: UIButton) {
         var blah = textField.text!
         releaseYear(name: "\(blah)")
-        print("\(blah)")
+        for i in 0..<movies.count{
+            print(movies[i])
+        }
     }
     
     func releaseYear(name: String){
@@ -51,52 +60,32 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             else{
                 if let d = data{
-                    //getting the json object from the api
                     if let jsonObj = try? JSONSerialization.jsonObject(with: d, options: .fragmentsAllowed) as? NSDictionary{
-                        print(jsonObj)
-                        if jsonObj.value(forKey: "Error") as? String == "Movie not found!"{
-                            DispatchQueue.main.async{
-                                self.label.text = "error"
-                            }
-                            return
+                        //                        print(jsonObj)
+                        
+                        //get Movie object with JSONDecoder
+                        if let movieObj = try? JSONDecoder().decode(Movie.self, from: d){
+                            print(movieObj.Title)
                         }
-                        if let movieArray = jsonObj.value(forKey: "Search") as? [NSDictionary]{
-                            DispatchQueue.main.async{
-                                for i in 0..<movieArray.count{
-                                    var blah = "\(movieArray[i])"
-                                    self.movies.append(blah)
-                                    print(blah)
-                                }
-                            }
-                                                        
+                        else{
+                            print("error decoding to movie object")
                         }
                         
-                        
                     }
-                    else{
-                        print("couldnt get data")
-                    }
+                    
+                    
+                    
+                    
+                    
                 }
-                else{
-                    print("no data")
-                }
+                
             }
         }
-        dataTask.resume()
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movies.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "myCell") as? CrazyCell3
-        var blat = movies[indexPath.row]
-        cell!.label1?.text = blat
-        return cell!
-        
-    }
+            dataTask.resume()
+        }
+            
+            
+        }
     
     
-}
 
