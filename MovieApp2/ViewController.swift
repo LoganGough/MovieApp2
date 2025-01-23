@@ -14,7 +14,9 @@ struct Movie: Codable{
 
 import UIKit
 
-class ViewController: UIViewController{
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
+    
+    
     
     
     
@@ -26,13 +28,15 @@ class ViewController: UIViewController{
     @IBOutlet weak var tableView: UITableView!
     
     var movies = [String]()
+    var count = 0
     
-    
-    @IBOutlet weak var tableViewOutlet: UITableView!
+
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.delegate = self
+        tableView.dataSource = self
         
         // Do any additional setup after loading the view.
     }
@@ -41,9 +45,10 @@ class ViewController: UIViewController{
     @IBAction func button(_ sender: UIButton) {
         var blah = textField.text!
         releaseYear(name: "\(blah)")
-        for i in 0..<movies.count{
-            print(movies[i])
-        }
+//        for i in 0..<movies.count{
+//            print(movies[i])
+//        }
+        
     }
     
     func releaseYear(name: String){
@@ -60,32 +65,74 @@ class ViewController: UIViewController{
             }
             else{
                 if let d = data{
+                    //getting the json object from the api
                     if let jsonObj = try? JSONSerialization.jsonObject(with: d, options: .fragmentsAllowed) as? NSDictionary{
-                        //                        print(jsonObj)
-                        
-                        //get Movie object with JSONDecoder
-                        if let movieObj = try? JSONDecoder().decode(Movie.self, from: d){
-                            print(movieObj.Title)
+                        //print(jsonObj)
+                        if jsonObj.value(forKey: "Error") as? String == "Movie not found!"{
+                            DispatchQueue.main.async{
+                                self.label.text = "error"
+                            }
+                            return
                         }
-                        else{
-                            print("error decoding to movie object")
+                        if let movieArray = jsonObj.value(forKey: "Search") as? [NSDictionary]{
+                            DispatchQueue.main.async{ [self] in
+                                for i in 0..<movieArray.count{
+                                    if self.count > 0{
+//                                        for k in 0..<self.movies.count{
+//                                            movies.
+//                                        }
+                                    }
+                                    var blah = "\(movieArray[i]["Title"]!)"
+                                    
+                                    self.movies.append(blah)
+                                    
+                                    //print(blah)
+                                    
+                                    
+                                    
+                                }
+                                count += 1
+                                self.tableView.reloadData()
+                                
+                                                            }
+                            
                         }
                         
                     }
                     
-                    
-                    
-                    
-                    
+                    else{
+                        print("couldnt get data")
+                    }
+                }
+                else{
+                    print("no data")
                 }
                 
             }
-        }
-            dataTask.resume()
-        }
-            
             
         }
+        
+        dataTask.resume()
+        
     
-    
+    }
+        
+          func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+              return movies.count
+              
+          }
+          
+          func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+              let cell = tableView.dequeueReusableCell(withIdentifier: "myCell") as? CrazyCell3
+              var blat = "\(movies[indexPath.row])"
+              cell!.label1?.text = blat
+              for i in 0..<movies.count{
+                  print(movies[i])
+              }
+              return cell!
+              
+              
+          }
 
+
+}
