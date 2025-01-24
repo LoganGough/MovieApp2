@@ -4,10 +4,13 @@
 //
 //  Created by LOGAN GOUGH on 1/14/25.
 //
-struct Movie: Codable{
-    var Title: String
-    var Year: Int
+class AppData{
+    static var count = 0
     
+    static var globalMovie = ""
+    
+    static var gobalYear = ""
+    static var globalType = ""
 }
 
 
@@ -48,6 +51,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBAction func button(_ sender: UIButton) {
         
         var blah = textField.text!
+        
         if(blah == ""){
             let alert = UIAlertController(title: "Error", message: "You cannot leave the textfield blank", preferredStyle: .alert)
             let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
@@ -145,6 +149,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
               
               
           }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        var temp = indexPath.row
+        AppData.globalMovie = movies[indexPath.row]
+        AppData.count = temp
+        AppData.globalType = types[indexPath.row]
+        AppData.gobalYear = years[indexPath.row]
+        performSegue(withIdentifier: "segue", sender: self)
+        
+    }
 
 
 }
